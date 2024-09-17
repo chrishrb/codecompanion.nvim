@@ -56,7 +56,18 @@ return {
           lines
         )
       end
-
+      if action.method == "add" then
+        local buf = vim.api.nvim_create_buf(true, false)
+        vim.api.nvim_buf_set_name(buf, action.file_path)
+        vim.fn.bufload(buf)
+        vim.api.nvim_buf_set_lines(
+          buf,
+          0,
+          0,
+          false,
+          lines
+        )
+      end
       return { status = "success", output = nil }
     end,
   },
@@ -84,6 +95,16 @@ return {
         },
       },
     },
+    {
+      name = "editor",
+      parameters = {
+        inputs = {
+          file_path = "/Users/christoph/dev/hello.py",
+          method = "new",
+          code = "print('Hello CodeCompanion')",
+        },
+      },
+    },
   },
   system_prompt = function(schema)
     return string.format(
@@ -106,13 +127,21 @@ Or, Consider the following example which replaces content between the lines 10 a
 %s
 ```
 
+Or, Consider the following example which creates a new file with the path /Users/christoph/hello.py and content print('Hello CodeCompanion'). The file path should
+be the same as the current buffer unless unit tests are created. Then the file should be in the default unit test path for the filetype:
+
+```xml
+%s
+```
+
 You must:
 - Even though you have access to the tool, you are not permitted to use it in all of your responses
 - You can only use this tool when the user specifically asks for it in their last message. For example "can you update the code for me?" or "can you insert the code ..."
 - Ensure the user has seen your code and approved it before you call the tool
 - Ensure the code you're executing will be able to parsed as valid XML]],
       xml2lua.toXml(schema[1], "tool"),
-      xml2lua.toXml(schema[2], "tool")
+      xml2lua.toXml(schema[2], "tool"),
+      xml2lua.toXml(schema[3], "tool")
     )
   end,
 }
