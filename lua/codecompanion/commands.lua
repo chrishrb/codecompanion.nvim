@@ -1,5 +1,5 @@
 local log = require("codecompanion.utils.log")
-local config = require("codecompanion.config")
+local config = require("codecompanion").config
 
 ---@class CodeCompanionCommandOpts:table
 ---@field desc string
@@ -10,10 +10,6 @@ local config = require("codecompanion.config")
 ---@field opts CodeCompanionCommandOpts
 
 local codecompanion = require("codecompanion")
-
-local clean_up_prompt = function(prompt)
-  return prompt:match("%s(.+)")
-end
 
 ---@type CodeCompanionCommand[]
 return {
