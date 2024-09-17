@@ -57,22 +57,25 @@ return {
         )
       end
       if action.method == "new" then
-        local buf
-        if vim.fn.filewritable(action.file_path) then
-          buf = vim.fn.bufadd(action.file_path)
-          vim.fn.bufload(buf)
+        local start_line, buf
+        buf = vim.fn.bufadd(action.file_path)
+        vim.fn.bufload(buf)
+
+        if vim.fn.filewritable(action.file_path) == 1 then
+          start_line = -1
         else
-          buf = vim.api.nvim_create_buf(true, false)
-          vim.api.nvim_buf_set_name(buf, action.file_path)
+          start_line = 0
         end
 
         vim.api.nvim_buf_set_lines(
           buf,
-          -1,
-          -1,
+          start_line,
+          start_line,
           false,
           lines
         )
+        local filetype = vim.filetype.match { buf = buf }
+        vim.api.nvim_set_option_value('filetype', filetype, { buf = buf })
         vim.api.nvim_win_set_buf(0, buf)
       end
       return { status = "success", output = nil }
@@ -135,7 +138,7 @@ Or, Consider the following example which replaces content between the lines 10 a
 ```
 
 Or, Consider the following example which creates or saves a new file with the path /Users/christoph/hello.py and content print('Hello CodeCompanion'). The file path should
-be the same as the current buffer unless unit tests are created. Then the file should be in the default unit test path for the filetype:
+be the same as the current buffer unless it is given by the user:
 
 ```xml
 %s
@@ -145,6 +148,7 @@ You must:
 - Even though you have access to the tool, you are not permitted to use it in all of your responses
 - You can only use this tool when the user specifically asks for it in their last message. For example "can you update the code for me?" or "can you insert the code ..."
 - Ensure the user has seen your code and approved it before you call the tool
+- If you have any open questions, ask them
 - Ensure the code you're executing will be able to parsed as valid XML]],
       xml2lua.toXml(schema[1], "tool"),
       xml2lua.toXml(schema[2], "tool"),
