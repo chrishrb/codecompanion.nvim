@@ -19,7 +19,7 @@ return {
       local lines = vim.split(action.code, "\n", { plain = true, trimempty = false })
 
       -- Diff the buffer
-      if config.opts.diff.enabled then
+      if config.opts.diff.enabled and action.method ~= "new" then
         local ok
         local provider = config.opts.diff.provider
         ok, diff = pcall(require, "codecompanion.helpers.diff." .. provider)
@@ -56,17 +56,24 @@ return {
           lines
         )
       end
-      if action.method == "add" then
-        local buf = vim.api.nvim_create_buf(true, false)
-        vim.api.nvim_buf_set_name(buf, action.file_path)
-        vim.fn.bufload(buf)
+      if action.method == "new" then
+        local buf
+        if vim.fn.filewritable(action.file_path) then
+          buf = vim.fn.bufadd(action.file_path)
+          vim.fn.bufload(buf)
+        else
+          buf = vim.api.nvim_create_buf(true, false)
+          vim.api.nvim_buf_set_name(buf, action.file_path)
+        end
+
         vim.api.nvim_buf_set_lines(
           buf,
-          0,
-          0,
+          -1,
+          -1,
           false,
           lines
         )
+        vim.api.nvim_win_set_buf(0, buf)
       end
       return { status = "success", output = nil }
     end,
@@ -127,7 +134,7 @@ Or, Consider the following example which replaces content between the lines 10 a
 %s
 ```
 
-Or, Consider the following example which creates a new file with the path /Users/christoph/hello.py and content print('Hello CodeCompanion'). The file path should
+Or, Consider the following example which creates or saves a new file with the path /Users/christoph/hello.py and content print('Hello CodeCompanion'). The file path should
 be the same as the current buffer unless unit tests are created. Then the file should be in the default unit test path for the filetype:
 
 ```xml
