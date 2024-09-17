@@ -138,7 +138,7 @@ Or, Consider the following example which replaces content between the lines 10 a
 ```
 
 Or, Consider the following example which creates or saves a new file with the path /Users/christoph/hello.py and content print('Hello CodeCompanion'). The file path should
-be the same as the current buffer unless it is given by the user:
+be the same absolute path as the current buffer unless the path is specified by the user:
 
 ```xml
 %s
@@ -148,7 +148,6 @@ You must:
 - Even though you have access to the tool, you are not permitted to use it in all of your responses
 - You can only use this tool when the user specifically asks for it in their last message. For example "can you update the code for me?" or "can you insert the code ..."
 - Ensure the user has seen your code and approved it before you call the tool
-- If you have any open questions, ask them
 - Ensure the code you're executing will be able to parsed as valid XML]],
       xml2lua.toXml(schema[1], "tool"),
       xml2lua.toXml(schema[2], "tool"),
