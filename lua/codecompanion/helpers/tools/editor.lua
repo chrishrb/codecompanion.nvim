@@ -138,7 +138,7 @@ Or, Consider the following example which replaces content between the lines 10 a
 ```
 
 Or, Consider the following example which creates or saves a new file with the path /Users/christoph/hello.py and content print('Hello CodeCompanion'). The file path should
-be the same absolute path as the current buffer unless the path is specified by the user:
+be the same path as the current buffer unless the path is specified by the user. Use always absolute paths like /Users/christoph/hello.py and not relative paths like ./hello.py:
 
 ```xml
 %s
